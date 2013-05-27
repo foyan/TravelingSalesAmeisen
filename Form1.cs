@@ -42,8 +42,12 @@ namespace TravelingSalesPerson {
         protected override void OnPaint(PaintEventArgs e) {
             base.OnPaint(e);
             e.Graphics.SmoothingMode = SmoothingMode.HighQuality;
-            foreach (var ph in _pheromones) {
-                using (var pen = new Pen(Color.Gray, ph.Width)) {
+            foreach (var ph in _pheromones.OrderBy(p => p.Width)) {
+                var rgb = 255 - 128*ph.Width;
+                if (rgb < 128) {
+                    rgb = 128;
+                }
+                using (var pen = new Pen(Color.FromArgb((int)rgb, (int)rgb, (int)rgb), ph.Width)) {
                     e.Graphics.DrawLine(pen, ph.Start, ph.End);
                 }
             }

@@ -133,6 +133,16 @@ namespace TravelingSalesPerson {
             cities.Single(c => c.Name.EndsWith("rich")).Coords = new Point(566, 186);
             cities.Single(c => c.Name == "Zug").Coords = new Point(562, 242);
 
+            //cities.Remove(cities.Single(c => c.Name == "Aarau"));
+            //cities.Remove(cities.Single(c => c.Name == "Andermatt"));
+            //cities.Remove(cities.Single(c => c.Name == "Basel"));
+            //cities.Remove(cities.Single(c => c.Name == "Glarus"));
+
+            //cities.ForEach(c => c.Neighbours.Remove(c.Neighbours.Single(r => r.Destination.Name == "Andermatt")));
+            //cities.ForEach(c => c.Neighbours.Remove(c.Neighbours.Single(r => r.Destination.Name == "Aarau")));
+            //cities.ForEach(c => c.Neighbours.Remove(c.Neighbours.Single(r => r.Destination.Name == "Basel")));
+            //cities.ForEach(c => c.Neighbours.Remove(c.Neighbours.Single(r => r.Destination.Name == "Glarus")));
+
             return cities;
         } 
 
@@ -247,18 +257,18 @@ namespace TravelingSalesPerson {
 
         private static T SelectFromRouletteWheel<T>(IEnumerable<T> candidates, Func<T, double> prop) {
             var cands = candidates.Select(c => new {cand = c, prob = prop(c)}).ToList();
+            var norm = cands.Sum(c => c.prob);
 
-            var running = 0d;
-            var index = 0;
+            var r = _rand.NextDouble() * norm;
 
-            for (var i = 1; i < cands.Count; i++) {
-                var cand = cands[i];
-                running += cand.prob;
-                if (_rand.NextDouble() <= cand.prob/running) {
-                    index = i;
+            foreach (var c in cands) {
+                if (r < c.prob) {
+                    return c.cand;
                 }
+                r -= c.prob;
             }
-            return cands[index].cand;
+
+            return cands.Last().cand;
 
         }
 
